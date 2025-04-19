@@ -1,17 +1,11 @@
-# Python
 __pycache__/
 *.pyc
 *.pt
 venv/
-
-# Android
-*.iml
 .gradle/
 .idea/
 *.apk
 local.properties
 build/
-
-# Secrets
 *.pem
 .env

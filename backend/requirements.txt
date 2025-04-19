@@ -1,3 +1,6 @@
-# requirements.txt
-
-Placeholder content for requirements.txt
+Flask
+torch
+torchvision
+Pillow
+boto3
+pymysql
