@@ -1,0 +1,7 @@
+CREATE TABLE scan_history (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ user_email VARCHAR(255),
+ prediction VARCHAR(100),
+ image_url TEXT,
+ scan_time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
