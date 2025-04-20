@@ -1,0 +1,135 @@
+@startuml DefecScan Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam linetype ortho
+
+package "Mobile Application" {
+  class User {
+    -userId: String
+    -name: String
+    -email: String
+    -password: String
+    +register(): Boolean
+    +login(): Boolean
+    +updateProfile(): Boolean
+  }
+
+  class WallScan {
+    -scanId: String
+    -userId: String
+    -timestamp: DateTime
+    -imageData: Blob
+    -location: GeoLocation
+    +captureScan(): Boolean
+    +uploadScan(): Boolean
+    +retrieveScanHistory(): List<WallScan>
+  }
+
+  class DefectAnalysis {
+    -analysisId: String
+    -scanId: String
+    -defectType: List<DefectType>
+    -severity: Map<DefectType, SeverityLevel>
+    -confidence: Map<DefectType, Float>
+    -recommendations: List<String>
+    +analyzeImage(): Boolean
+    +generateReport(): Report
+    +trackDefectProgression(): ProgressionData
+  }
+
+  enum DefectType {
+    CRACK
+    DAMPNESS
+    MOLD
+    PEELING
+    DISCOLORATION
+    STRUCTURAL_DAMAGE
+  }
+
+  enum SeverityLevel {
+    LOW
+    MEDIUM
+    HIGH
+    CRITICAL
+  }
+
+  class Report {
+    -reportId: String
+    -analysisId: String
+    -generatedDate: DateTime
+    -summary: String
+    -detailedFindings: Map<DefectType, String>
+    -recommendations: List<String>
+    +exportPDF(): Boolean
+    +shareReport(): Boolean
+  }
+}
+
+package "AI Model" {
+  class ImagePreprocessor {
+    +resize(image: Image, dimensions: Tuple): Image
+    +normalize(image: Image): Image
+    +augment(image: Image): List<Image>
+    +extractFeatures(image: Image): FeatureMap
+  }
+
+  class DefectDetector {
+    -model: CNNModel
+    +detectDefects(image: Image): List<BoundingBox>
+    +classifyDefects(regions: List<Image>): Map<Region, DefectType>
+    +assessSeverity(defect: Defect): SeverityLevel
+  }
+
+  class CNNModel {
+    -architecture: String
+    -weights: Tensor
+    -hyperparameters: Map<String, Float>
+    +predict(input: Tensor): Tensor
+    +train(data: Dataset): TrainingMetrics
+    +evaluate(data: Dataset): EvaluationMetrics
+    +saveModel(path: String): Boolean
+    +loadModel(path: String): Boolean
+  }
+}
+
+package "Cloud Backend" {
+  class CloudStorage {
+    +uploadImage(image: Image, metadata: Map): String
+    +retrieveImage(imageId: String): Image
+    +deleteImage(imageId: String): Boolean
+  }
+
+  class UserDatabase {
+    +createUser(user: User): String
+    +getUser(userId: String): User
+    +updateUser(userId: String, data: Map): Boolean
+    +deleteUser(userId: String): Boolean
+  }
+
+  class AnalyticsEngine {
+    +trackDefectTrends(userId: String): TrendData
+    +generateInsights(scanHistory: List<WallScan>): Insights
+    +predictMaintenance(defectHistory: List<DefectAnalysis>): MaintenancePrediction
+  }
+}
+
+' Relationships
+User "1" -- "many" WallScan : performs
+WallScan "1" -- "1" DefectAnalysis : generates
+DefectAnalysis "1" -- "1" Report : produces
+DefectAnalysis "1" -- "many" DefectType : identifies
+DefectAnalysis "1" -- "many" SeverityLevel : assigns
+
+ImagePreprocessor ..> WallScan : processes
+DefectDetector ..> ImagePreprocessor : uses
+DefectDetector "1" -- "1" CNNModel : employs
+DefectDetector ..> DefectAnalysis : populates
+
+CloudStorage ..> WallScan : stores
+UserDatabase ..> User : manages
+AnalyticsEngine ..> DefectAnalysis : analyzes
+AnalyticsEngine ..> Report : enhances
+
+@enduml
