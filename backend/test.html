@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DefecScan Test Upload</title>
+</head>
+<body>
+  <h1>Upload Image for Prediction</h1>
+  <form id="uploadForm" enctype="multipart/form-data" method="post" action="http://204.236.197.57:5000/predict">
+    <input type="file" name="image" accept="image/*" required>
+    <br><br>
+    <input type="submit" value="Upload & Predict">
+  </form>
+
+  <h3>Result:</h3>
+  <pre id="result"></pre>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+      result.textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
